@@ -14,14 +14,24 @@ from textblob import TextBlob
 class SentimentAnalyzer:
     def __init__(self):
         self.sid = SentimentIntensityAnalyzer()
+        self.categorization_values = {
+            '_positive': [0.7, 1.0], 
+            '_slightly_positive': [0.4, 0.7], 
+            '_neutral': [-0.35, 0.4], 
+            '_slightly_negative': [-0.7, -0.35], 
+            '_negative': [-1.0, -0.7]
+        }
 
-    def categorize(scores):
-        if scores['compound'] > 0.5:
-            return "_positive", scores
-        elif scores['compound'] < -0.5:
-            return "_negative", scores
-        else:
-            return "_neutral", scores
+    def categorize(self, scores):
+        for folder, range_values in self.categorization_values.items():
+            if (scores['compound'] < range_values[1]) and (scores['compound'] > range_values[0]):
+                return folder
+        # if scores['compound'] > 0.5:
+        #     return "_positive", scores
+        # elif scores['compound'] < -0.5:
+        #     return "_negative", scores
+        # else:
+        #     return "_neutral", scores
 
     def analyze(self, text: str, mode: int = 0):
         if mode == 0:
@@ -88,8 +98,8 @@ async def on_message(message):
         print(text)
         
         ### NLTK HERE ###
-        nltk_obj = SentimentAnalyzer()
-        categorization, scores = nltk_obj.analyze(text, 1)
+        sentiment_object = SentimentAnalyzer()
+        categorization, scores = sentiment_object.analyze(text, 1)
 
         sentiment_folder = miku_folder + "/" + categorization
 
@@ -115,6 +125,7 @@ async def on_message(message):
         await p.communicate()
 
         await message.channel.send(file=discord.File(filename))
+        await message.channel.send(content=categorization)
         await message.channel.send(content=scores)
 
 with open("config.json", 'r') as f:
