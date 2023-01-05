@@ -87,7 +87,7 @@ async def on_message(message):
         cmd_run = cmd_run.replace("$BOTTOMTEXT", bottom)
 
         file = random.choice([x for x in os.listdir(sentiment_folder) if os.path.isfile(os.path.join(sentiment_folder, x))])
-        file = f"{miku_folder}/{file}"
+        file = f"{sentiment_folder}/{file}"
         cmd_run = cmd_run.replace("$INFILE", file)
         
         filename = str(uuid.uuid4())[0:4] + str(int(time.time())) + ".gif"
