@@ -14,14 +14,14 @@ class SentimentAnalyzer:
     def __init__(self):
         self.sid = SentimentIntensityAnalyzer()
 
-    def analyze(self, text: str) -> str:
+    def analyze(self, text: str):
         scores = self.sid.polarity_scores(text)
         if scores['compound'] > 0.5:
-            return "_positive"
+            return "_positive", scores
         elif scores['compound'] < -0.5:
-            return "_negative"
+            return "_negative", scores
         else:
-            return "_neutral"
+            return "_neutral", scores
 
     
 intents = discord.Intents.default()
@@ -72,7 +72,7 @@ async def on_message(message):
         
         ### NLTK HERE ###
         nltk_obj = SentimentAnalyzer()
-        categorization = nltk_obj.analyze(text)
+        categorization, scores = nltk_obj.analyze(text)
 
         sentiment_folder = miku_folder + "/" + categorization
 
@@ -98,6 +98,7 @@ async def on_message(message):
         await p.communicate()
 
         await message.channel.send(file=discord.File(filename))
+        await message.channel.send(content=scores)
 
 with open("config.json", 'r') as f:
     config = json.load(f)
