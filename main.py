@@ -86,7 +86,7 @@ async def on_message(message):
         cmd_run = cmd_template.replace("$TOPTEXT", top)
         cmd_run = cmd_run.replace("$BOTTOMTEXT", bottom)
 
-        file = random.choice([x for x in os.listdir(sentiment_folder) if os.path.isfile(os.path.join(miku_folder, x))])
+        file = random.choice([x for x in os.listdir(sentiment_folder) if os.path.isfile(os.path.join(sentiment_folder, x))])
         file = f"{miku_folder}/{file}"
         cmd_run = cmd_run.replace("$INFILE", file)
         
