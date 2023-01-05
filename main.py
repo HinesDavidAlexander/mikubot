@@ -8,20 +8,37 @@ import re
 import random
 import nltk
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
+from textblob import TextBlob
 
 
 class SentimentAnalyzer:
     def __init__(self):
         self.sid = SentimentIntensityAnalyzer()
 
-    def analyze(self, text: str):
-        scores = self.sid.polarity_scores(text)
+    def categorize(scores):
         if scores['compound'] > 0.5:
             return "_positive", scores
         elif scores['compound'] < -0.5:
             return "_negative", scores
         else:
             return "_neutral", scores
+
+    def analyze(self, text: str, mode: int = 0):
+        if mode == 0:
+            self.sent_nltk(text)
+        elif mode == 1:
+            self.sent_blob(text)
+        else:
+            return "please enter a valid mode. 0,1", 0.0
+
+    def sent_nltk(self, text: str):
+        scores = self.sid.polarity_scores(text)
+        return self.categorize(scores)
+    
+    def sent_blob(self, text: str):
+        text_blob = TextBlob(text)
+        return self.categorize(text_blob.sentiment.polarity)
+        
 
     
 intents = discord.Intents.default()
@@ -72,7 +89,7 @@ async def on_message(message):
         
         ### NLTK HERE ###
         nltk_obj = SentimentAnalyzer()
-        categorization, scores = nltk_obj.analyze(text)
+        categorization, scores = nltk_obj.analyze(text, 1)
 
         sentiment_folder = miku_folder + "/" + categorization
 
