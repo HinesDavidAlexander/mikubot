@@ -24,7 +24,7 @@ class SentimentAnalyzer:
 
     def categorize(self, scores):
         for folder, range_values in self.categorization_values.items():
-            if (scores['compound'] < range_values[1]) and (scores['compound'] > range_values[0]):
+            if (scores < range_values[1]) and (scores > range_values[0]):
                 return folder
         # if scores['compound'] > 0.5:
         #     return "_positive", scores
@@ -35,15 +35,15 @@ class SentimentAnalyzer:
 
     def analyze(self, text: str, mode: int = 0):
         if mode == 0:
-            self.sent_nltk(text)
+            return self.sent_nltk(text)
         elif mode == 1:
-            self.sent_blob(text)
+            return self.sent_blob(text)
         else:
             return "please enter a valid mode. 0,1", 0.0
 
     def sent_nltk(self, text: str):
         scores = self.sid.polarity_scores(text)
-        return self.categorize(scores)
+        return self.categorize(scores['compound'])
     
     def sent_blob(self, text: str):
         text_blob = TextBlob(text)
